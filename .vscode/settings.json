@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "xutility": "cpp",
+        "vector": "cpp"
+    },
+    "java.project.sourcePaths": [
+        "java/src/select",
+        "java/src"
+    ],
+    "C_Cpp.errorSquiggles": "Enabled"
+}
