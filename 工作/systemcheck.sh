@@ -1,9 +1,9 @@
 #!/bin/bash
 echo '------------test-----------'
 
-blkid>linzhetest.log
+blkid>systemcheck.log
 
-FILE=linzhetest.log
+FILE=systemcheck.log
 MATCH=KOLLA_CEPH_DATA_BS_
 sum=0
 sumM=0
@@ -23,7 +23,7 @@ do
             then
                 ((sumM++))
                 flag=1
-                echo -e '\n'
+                echo 
                 echo $result
                 echo 'ERROR, It is can not mount';
             fi
@@ -31,7 +31,7 @@ do
             if [[ $result != *" UUID"* ]];
             then
                 flag=1
-                echo -e '\n'
+                echo 
                 echo $result
                 echo 'ERROR, It is not mounted';
             else
@@ -43,18 +43,18 @@ done < $FILE
 
 if [[ $flag == "0" ]];
 then
-    echo -e '\n'
+    echo 
     echo 'All is OK';
 fi
 
 
 
-echo -e '\n'
+echo 
 echo -n 'The total amount of the kolla disk is : '
 echo $sum
-echo -e '\n'
+echo 
 echo -n 'The amount of the kolla disk which has been mounted is : '
 echo $sumM
 
-echo -e '\n'
+echo 
 echo '----------end--test--------'
