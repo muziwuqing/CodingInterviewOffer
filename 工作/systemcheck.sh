@@ -1,60 +1,89 @@
-#!/bin/bash
-echo '------------test-----------'
+#! /bin/bash
+usage()
+{
+    echo "Usage: $0 [-h -dc -ip]"
+    echo
+    echo "Used for check the system"
+    echo
+    echo "       -h | --help          output this help information"
+    echo "       -dc | --diskcheck    check the kolla disk information"
+    echo "       -ip | --ip           the ip address that need check"
+    echo
+}
 
-blkid>systemcheck.log
+diskcheck() {
 
-FILE=systemcheck.log
-MATCH=KOLLA_CEPH_DATA_BS_
-sum=0
-sumM=0
-flag=0
+#    blkid>systemcheck.log
+    FILE=systemcheck.log
+    MATCH=KOLLA_CEPH_DATA_BS_
+    flag=0
 
-
-while read line
-do
-    result=`echo $line | grep PARTLABEL=\"$MATCH.*`
-    if [[ "$result" != "" ]]
-    then
-        ((sum++))
-        match=`echo $result | grep PARTLABEL=\"$MATCH._B`
-        if [[ "$match" != "" ]]
+    while read line
+    do
+        result=`echo $line | grep PARTLABEL=\"$MATCH.*`
+        if [[ "$result" != "" ]]
         then
-            if [[ $result == *" UUID"* ]];
+            match=`echo $result | grep PARTLABEL=\"$MATCH._B`
+            if [[ "$match" != "" ]]
             then
-                ((sumM++))
-                flag=1
-                echo 
-                echo $result
-                echo 'ERROR, It is can not mount';
-            fi
-        else
-            if [[ $result != *" UUID"* ]];
-            then
-                flag=1
-                echo 
-                echo $result
-                echo 'ERROR, It is not mounted';
+                if [[ $result == *" UUID"* ]];
+                then
+                    flag=1;
+                fi
             else
-                ((sumM++))
+                if [[ $result != *" UUID"* ]];
+                then
+                    flag=2
+                fi
             fi
         fi
-    fi
-done < $FILE
+    done < $FILE
 
-if [[ $flag == "0" ]];
-then
-    echo 
-    echo 'All is OK';
-fi
+    return $flag
+}
 
-
-
-echo 
-echo -n 'The total amount of the kolla disk is : '
-echo $sum
-echo 
-echo -n 'The amount of the kolla disk which has been mounted is : '
-echo $sumM
-
-echo 
-echo '----------end--test--------'
+opt=$1
+case $opt in
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    -ip | --ip)
+        ssh -f -n root@$2 "blkid" > systemcheck.log
+        diskcheck
+        fg=$?
+        echo 'The check result: '
+        echo -n 'Check Kolla disk: '
+        if [[ $fg == "0" ]];
+        then
+            echo 'OK';
+        elif [[ $fg == "1" ]];
+        then
+            echo 'ERROR, It is can not mount';
+        elif [[ $fg == "2" ]];
+        then
+            echo 'ERROR, It is not mounted';
+        fi
+        exit 0
+        ;;
+    -dc | --diskcheck)
+        diskcheck
+        fg=$?
+        echo 'The check result: '
+        echo -n 'Check Kolla disk: '
+        if [[ $fg == "0" ]];
+        then
+            echo 'OK';
+        elif [[ $fg == "1" ]];
+        then
+            echo 'ERROR, It is can not mount';
+        elif [[ $fg == "2" ]];
+        then
+            echo 'ERROR, It is not mounted';
+        fi
+        exit 0
+        ;;
+    *)
+        exit 1
+        ;;
+esac

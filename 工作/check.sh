@@ -7,6 +7,7 @@ usage()
     echo
     echo "       -h | --help    output this help information"
     echo "       -dc | --diskcheck    check the kolla disk information"
+    echo 
 }
 
 diskcheck() {
@@ -14,7 +15,6 @@ diskcheck() {
     blkid>systemcheck.log
     FILE=systemcheck.log
     MATCH=KOLLA_CEPH_DATA_BS_
-    sum=0
     flag=0
 
     while read line
@@ -22,24 +22,17 @@ diskcheck() {
         result=`echo $line | grep PARTLABEL=\"$MATCH.*`
         if [[ "$result" != "" ]]
         then
-            ((sum++))
             match=`echo $result | grep PARTLABEL=\"$MATCH._B`
             if [[ "$match" != "" ]]
             then
                 if [[ $result == *" UUID"* ]];
                 then
-                    flag=1
-                    echo 
-                    echo $result
-                    echo 'ERROR, It is can not mount';
+                    flag=1;
                 fi
             else
                 if [[ $result != *" UUID"* ]];
                 then
-                    flag=1
-                    echo 
-                    echo $result
-                    echo 'ERROR, It is not mounted';
+                    flag=2
                 fi
             fi
         fi
@@ -56,13 +49,19 @@ case $opt in
         ;;
     -dc | --diskcheck)
         diskcheck
-        if [[ $? == "0" ]];
+        fg=$?
+        echo
+        echo -n 'Check Kolla disk: '
+        if [[ $fg == "0" ]];
         then
-            echo 
-            echo 'All is OK'
-            echo
-        else
-            echo 'There are something wrong'
+            echo 'OK';
+        elif [[ $fg == "1" ]];
+        then 
+            echo 'ERROR, It is can not mount';
+        elif [[ $fg == "2" ]];
+        then
+            echo 'ERROR, It is not mounted';
+        fi
         exit 0
         ;;
     *)
