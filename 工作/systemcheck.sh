@@ -29,11 +29,13 @@ diskcheck() {
                 if [[ $result == *" UUID"* ]];
                 then
                     flag=1;
+                    mess=$result;
                 fi
             else
                 if [[ $result != *" UUID"* ]];
                 then
                     flag=2
+                    mess=$result;
                 fi
             fi
         fi
@@ -50,8 +52,10 @@ case $opt in
         ;;
     -ip | --ip)
         ssh -f -n root@$2 "blkid" > systemcheck.log
-        diskcheck
+        mess=
+        diskcheck message
         fg=$?
+        arr=($mess)
         echo 'The check result: '
         echo -n 'Check Kolla disk: '
         if [[ $fg == "0" ]];
@@ -59,16 +63,20 @@ case $opt in
             echo 'OK';
         elif [[ $fg == "1" ]];
         then
-            echo 'ERROR, It is can not mount';
+            echo -n 'ERROR, It is can not mount  The error position is: ';
+            echo "$arr";
         elif [[ $fg == "2" ]];
         then
-            echo 'ERROR, It is not mounted';
+            echo -n 'ERROR, It is not mounted  The error position is: ';
+            echo "$arr";
         fi
         exit 0
         ;;
     -dc | --diskcheck)
-        diskcheck
+        mess=
+        diskcheck message
         fg=$?
+        arr=($mess)
         echo 'The check result: '
         echo -n 'Check Kolla disk: '
         if [[ $fg == "0" ]];
@@ -76,10 +84,12 @@ case $opt in
             echo 'OK';
         elif [[ $fg == "1" ]];
         then
-            echo 'ERROR, It is can not mount';
+            echo -n 'ERROR, It is can not mount  The error position is: ';
+            echo "$arr";
         elif [[ $fg == "2" ]];
         then
-            echo 'ERROR, It is not mounted';
+            echo -n 'ERROR, It is not mounted  The error position is: ';
+            echo "$arr";
         fi
         exit 0
         ;;

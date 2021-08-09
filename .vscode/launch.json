@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch offertwentyfourth",
+            "request": "launch",
+            "mainClass": "offertwentyfourth.offertwentyfourth",
+            "projectName": "CodingInterviewOffer_30d322b7"
+        },
+        {
+            "type": "java",
             "name": "Launch offerthirteen",
             "request": "launch",
             "mainClass": "offerthirteen.offerthirteen",
