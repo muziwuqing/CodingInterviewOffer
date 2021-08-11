@@ -61,7 +61,7 @@ diskcheck() {
     else
     if [[ $flagWB == "1" ]];
     then
-        echo -n 'ERROR, It is can not mount  The error position is: ';
+        echo -n 'ERROR, It should not be mount  The error position is: ';
         echo "$arrWB";
     fi
     if [[ $flagWOB == "1" ]];
@@ -104,7 +104,7 @@ case $opt in
         exit 0
         ;;
     -ip | --ip)
-        ssh -f -n root@$2 "blkid" > systemcheck.log
+        ssh root@$2 "blkid">systemcheck.log
         echo 'The Check result: '
         diskcheck
         kernelcheck

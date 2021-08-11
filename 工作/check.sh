@@ -104,7 +104,7 @@ case $opt in
         exit 0
         ;;
     -ip | --ip)
-        ssh -f -n root@$2 "blkid" > systemcheck.log
+        ssh root@$2 "blkid">systemcheck.log
         echo 'The Check result: '
         diskcheck
         kernelcheck
