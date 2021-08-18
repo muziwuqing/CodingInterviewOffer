@@ -5,19 +5,19 @@ def findTarget(nums, target):
     j=len(nums)-1
     while i<j:
         if (temp[i]+temp[j])>target:
-            j=j-1
+            j = j - 1
         elif (temp[i]+temp[j])<target:
-            i=i+1
+            i = i + 1
         else:
             break
     p=nums.index(temp[i])
-    nums.pop(p)
+    nums[p] = -nums[p]-1 if nums[p] != 0 else 1
     k=nums.index(temp[j])
     if k == p:
-        k=k+1
+        k = k + 1
     if p > k:
         p, k = k, p
-    return [p,k]
+    return [p, k]
 
 
 if __name__ == '__main__':
